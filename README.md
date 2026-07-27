@@ -6,6 +6,7 @@ Created by GNS3
 
 ## ต้องใช้อะไรบ้าง : GNS3, VMware, ไฟล์ image ของ pfsense
 พวก config ต่างๆ ในแต่ละอุปกรณ์ ให้ copy&paste จากไฟล์ .conf โดยนำไปใส่ในช่อง *edit config* ของอุปกรณ์ทุกตัวก่อนที่จะ start
+
 rule , firewall อะไรต่างๆของ pfsense ให้เข้าไปที่ **Diagnostics -> Backups & Restore** แล้ว import ไฟล์ .xml
 
 ปล. pfsense webgui ไม่ได้เปลี่ยน username และ password
