@@ -1,36 +1,48 @@
 # enterprise-network-security-lab
 Created by GNS3
-# Enterprise Multi-VLAN Infrastructure & Security Simulation
+# 🛡️ Enterprise Multi-VLAN Network & Security Lab
 
-โครงการจำลองสถาปัตยกรรมระบบเครือข่ายและระบบความปลอดภัยระดับองค์กรด้วย GNS3 โดยเน้นเรื่อง **High Availability (Redundancy)**, **Traffic Management (Load Balancing)** และ **Gateway Security**
-
----
-
-## 📐 Network Architecture Overview
-*(แปะรูปภาพ Topology Diagram จาก GNS3 ที่นี่)*
-
-* **Core Layer:** Dual Open vSwitch (OVS) พร้อมการทำ **STP** (Spanning Tree Protocol) กำหนด Primary/Backup Root Bridge และ **LACP Bond** (Link Aggregation)
-* **Firewall & Routing:** pfSense จัดการ Inter-VLAN Routing, Stateful Firewall, และ DNS-based Filtering (**pfBlockerNG**)
-* **Load Balancer:** HAProxy กระจาย Traffic ให้กับ Backend Web Servers พร้อมกำหนด **Rate Limiting** และ **Custom Error Pages (403/503)**
-* **Backend & Clients:** Lightweight Web Applications บน Linux (Ubuntu) และ Client Simulation บน Alpine Linux / Webterm
+โครงการจำลองสถาปัตยกรรมระบบเครือข่ายและระบบความปลอดภัยระดับองค์กร (Enterprise Infrastructure Security) บน **GNS3** เน้นการออกแบบโครงสร้างแบบ **High Availability (Redundancy)**, **Inter-VLAN Routing**, **Traffic Management (HAProxy Load Balancing)** และ **Gateway Security**
 
 ---
 
-## 🛠️ Configuration Directory Structure
+## 📐 Network Architecture Diagram
 
-ไฟล์การตั้งค่าของอุปกรณ์ทั้งหมดใน GNS3 ถูกแยกไว้อย่างเป็นระเบียบในโฟลเดอร์ `/configs`:
+![Topology Diagram](./docs/topology-diagram.png)
 
-1. **Core Switches (Open vSwitch):**
-   * [`ovs1-core-primary.conf`](./configs/switches/ovs1-core-primary.conf) - OVS1 (STP Priority: 0x1000)
-   * [`ovs2-core-backup.conf`](./configs/switches/ovs2-core-backup.conf) - OVS2 (STP Priority: 0x2000)
-2. **Servers & Clients:**
-   * [`backend-server.conf`](./configs/servers-clients/backend-server.conf) - Backend Web Server (Static IP + Auto-deploy Python Service)
-   * [`dhcp-client.conf`](./configs/servers-clients/dhcp-client.conf) - Webterm / Alpine DHCP Configuration
+### 🏗️ Network Design Highlights
+* **Edge Firewall & Gateway:** **pfSense-1** ทำหน้าที่เป็น Stateful Firewall, Inter-VLAN Router, NAT Gateway ออกสู่อินเทอร์เน็ต และเป็น **DHCP Server**
+* **Core Layer Redundancy (Dual OVS):** ใช้ **Open vSwitch (OVS)** 2 ตัวทำงานร่วมกันในรูปแบบ Dual Core
+  * **Spanning Tree Protocol (STP):** ป้องกัน Loop โดยกำหนดให้ `OVS-Switch-1` เป็น Primary Root Bridge (`0x1000`) และ `OVS-Switch-2` เป็น Backup Root Bridge (`0x2000`)
+  * **LACP Link Aggregation:** ทำ LACP Bond (`eth1` + `eth5`) เชื่อมต่อระหว่าง OVS1 และ OVS2 เพื่อเพิ่ม Bandwidth และรองรับ Fault Tolerance
+* **Access Layer:** สเกลพอร์ตผ่าน Access Switches แยกตาม VLAN
+* **Load Balancing (HAProxy):** กำหนด Virtual IP (VIP) กระจาย Traffic จาก Client ไปยัง Backend Web Servers
 
 ---
 
-## 🚀 How to Deployment / Reproduce Lab
+## 🌐 IP Addressing & Subnet Strategy
 
-1. นำไฟล์ Config ในโฟลเดอร์ `configs/` ไปแปะในช่อง **Edit config** (`/etc/network/interfaces`) ของ Node แต่ละตัวใน GNS3
-2. กด **Start** อุปกรณ์ทุกตัวพร้อมกัน
-3. ตัว Backend Server จะทำการติดตั้ง `python3` และเริ่มรันบริการ Web Server บน Port 80 โดยอัตโนมัติภายใน 5-10 วินาทีหลังจากระบบบูตเสร็จ
+| VLAN Name | Subnet | Gateway | IP Allocation Type | DHCP Scope / Host IP | Description |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **VLAN10 (SERVER)** | `192.168.10.0/24` | `192.168.10.1` | Static Only | `192.168.10.101 - .102` | Backend Web Servers (No DHCP for Security) |
+| **VLAN20 (ADMIN)** | `192.168.20.0/24` | `192.168.20.1` | Dynamic (DHCP) | `192.168.20.100 - .200` | Admin Workstations / HAProxy VIP: `192.168.20.1:8080` |
+| **VLAN30 (CLIENT)** | `192.168.30.0/24` | `192.168.30.1` | Dynamic (DHCP) | `192.168.30.100 - .200` | End-User Workstations / HAProxy VIP: `192.168.30.1:8080` |
+
+---
+
+## 📁 Repository Directory Structure
+
+```text
+enterprise-network-lab/
+├── README.md                      # Documentation หน้าหลัก
+├── docs/
+│   └── topology-diagram.png       # แผนผังเครือข่าย GNS3 Topology
+└── configs/
+    ├── routers-firewalls/
+    │   └── pfsense-config.xml        # pfSense Complete Configuration Backup
+    ├── switches/
+    │   ├── ovs1-core-primary.conf    # OVS-Switch-1 Configuration (STP Priority 0x1000)
+    │   └── ovs2-core-backup.conf     # OVS-Switch-2 Configuration (STP Priority 0x2000)
+    └── servers-clients/
+        ├── backend-server.conf       # Ubuntu Web Server Static IP + Auto-deploy Script
+        └── dhcp-client.conf          # Generic DHCP Client Configuration (Alpine / Webterm)
