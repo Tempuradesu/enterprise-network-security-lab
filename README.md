@@ -4,6 +4,7 @@ Created by GNS3
 
 โครงการจำลองสถาปัตยกรรมระบบเครือข่ายและระบบความปลอดภัยระดับองค์กร (Enterprise Infrastructure Security) บน **GNS3** เน้นการออกแบบโครงสร้างแบบ **High Availability (Redundancy)**, **Inter-VLAN Routing**, **Traffic Management (HAProxy Load Balancing)** และ **Gateway Security**
 
+# ต้องใช้อะไรบ้าง : GNS3, VMware, ไฟล์ image ของ pfsense
 ---
 
 ## 📐 Network Architecture Diagram
