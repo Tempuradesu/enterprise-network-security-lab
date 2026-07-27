@@ -45,4 +45,4 @@ enterprise-network-lab/
     │   └── ovs2-core-backup.conf     # OVS-Switch-2 Configuration (STP Priority 0x2000)
     └── servers-clients/
         ├── backend-server.conf       # Ubuntu Web Server Static IP + Auto-deploy Script
-        └── dhcp-client.conf          # Generic DHCP Client Configuration (Alpine / Webterm)
+        └── dhcp-client.conf          # Generic DHCP Client Configuration (Alpine / Webterm ทั้งของ Admin และ CLient)
