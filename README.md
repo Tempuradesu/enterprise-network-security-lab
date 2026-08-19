@@ -47,7 +47,7 @@ enterprise-network-lab/
     ├── routers-firewalls/
     │   └── pfsense-config.xml        # pfSense Complete Configuration Backup
     ├── switches/
-    ├── access-switch-1.conf      # bpdu guard + portFast
+    |   ├── access-switch-1.conf      # bpdu guard + portFast
     |   ├── access-switch-2.conf      # bpdu guard + portFast
     |   ├── access-switch-3.conf      # bpdu guard + portFast
     │   ├── ovs1-core-primary.conf    # OVS-Switch-1 Configuration (STP Priority 0x1000)
